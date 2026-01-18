@@ -1,12 +1,23 @@
+import 'package:data_app/core/routing/app_router.dart';
+import 'package:data_app/core/routing/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class DataApp extends StatelessWidget {
-  const DataApp({super.key});
+  final AppRouter appRouter;
+  const DataApp({super.key, required this.appRouter});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(body: Center(child: Text('Hello World!'))),
+    return ScreenUtilInit(
+      designSize: const Size(360, 690),
+      minTextAdapt: true,
+      child: MaterialApp(
+        onGenerateRoute: appRouter.generateRoute,
+        initialRoute: Routes.home,
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(scaffoldBackgroundColor: Colors.black),
+      ),
     );
   }
 }
