@@ -20,7 +20,7 @@ class AppNameDescription extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'SQL to text',
+                  'Chat with your SQL',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: isDesktop ? 14.sp : 18.sp,
