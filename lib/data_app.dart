@@ -12,12 +12,30 @@ class DataApp extends StatelessWidget {
     return ScreenUtilInit(
       designSize: const Size(360, 690),
       minTextAdapt: true,
-      child: MaterialApp(
-        onGenerateRoute: appRouter.generateRoute,
-        initialRoute: Routes.home,
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(scaffoldBackgroundColor: Colors.black),
-      ),
+      builder: (context, child) {
+        return MaterialApp(
+          onGenerateRoute: appRouter.generateRoute,
+          initialRoute: Routes.home,
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            scaffoldBackgroundColor: Colors.black,
+            fontFamily: 'roboto',
+            textSelectionTheme: TextSelectionThemeData(
+              cursorColor: Colors.white,
+              selectionColor: Colors.white.withOpacity(0.1),
+            ),
+            inputDecorationTheme: InputDecorationTheme(
+              filled: true,
+              fillColor: Colors.white.withOpacity(0.1),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.r),
+                borderSide: BorderSide.none,
+                gapPadding: 0,
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
