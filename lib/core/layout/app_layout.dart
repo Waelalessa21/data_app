@@ -9,19 +9,37 @@ class AppLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          const GridBackground(),
-          SafeArea(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
-              child: child,
-            ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final screenWidth = MediaQuery.of(context).size.width;
+        final isDesktop = screenWidth > 1200;
+        final horizontalPadding = isDesktop ? 0.0 : 16.w;
+
+        return Scaffold(
+          body: Stack(
+            children: [
+              const GridBackground(),
+              SafeArea(
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: isDesktop ? 450.0 : double.infinity,
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: horizontalPadding,
+                        vertical: 24.h,
+                      ),
+                      child: child,
+                    ),
+                  ),
+                ),
+              ),
+              if (floatingWidget != null) floatingWidget!,
+            ],
           ),
-          if (floatingWidget != null) floatingWidget!,
-        ],
-      ),
+        );
+      },
     );
   }
 }

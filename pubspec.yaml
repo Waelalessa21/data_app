@@ -11,6 +11,8 @@ dependencies:
     sdk: flutter
   flutter_screenutil: ^5.9.3
   iconsax: ^0.0.8
+  sqflite: ^2.3.0
+  path: ^1.8.3
 
 dev_dependencies:
   flutter_test:
