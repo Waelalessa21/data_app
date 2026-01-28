@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:data_app/core/layout/responsive_utils.dart';
 import 'package:data_app/pages/login/ui/widgets/signup_form.dart';
 import 'package:data_app/pages/login/ui/widgets/login_form.dart';
 import 'package:data_app/core/database/database_service.dart';
@@ -15,44 +17,16 @@ class FormSwitcher extends StatefulWidget {
   State<FormSwitcher> createState() => _FormSwitcherState();
 }
 
-class _FormSwitcherState extends State<FormSwitcher>
-    with SingleTickerProviderStateMixin {
+class _FormSwitcherState extends State<FormSwitcher> {
   FormType _currentForm = FormType.signup;
-  late AnimationController _animationController;
-  late Animation<Offset> _slideAnimation;
-  late Animation<double> _fadeAnimation;
   String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 300),
-    );
-
-    _slideAnimation = Tween<Offset>(begin: Offset(1.0, 0.0), end: Offset.zero)
-        .animate(
-          CurvedAnimation(
-            parent: _animationController,
-            curve: Curves.easeInOut,
-          ),
-        );
-
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
-
-    _animationController.forward();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.onFormTypeChanged?.call(_currentForm == FormType.login);
     });
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
   }
 
   void _switchForm() {
@@ -62,7 +36,6 @@ class _FormSwitcherState extends State<FormSwitcher>
           : FormType.signup;
       _errorMessage = null;
     });
-    _animationController.forward(from: 0.0);
     widget.onFormTypeChanged?.call(_currentForm == FormType.login);
   }
 
@@ -136,24 +109,14 @@ class _FormSwitcherState extends State<FormSwitcher>
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isDesktop = constraints.maxWidth > 1200;
-        final isTablet = constraints.maxWidth > 600;
-
-        final linkSpacing = isDesktop ? 16.0 : 16.0;
-        final linkFontSize = isDesktop
-            ? 13.0
-            : isTablet
-            ? 13.0
-            : 14.0;
-        final linkButtonSpacing = isDesktop ? 6.0 : 8.0;
+        final isLarge = isLargeWidth(constraints.maxWidth);
+        final linkSpacing = isLarge ? 20.0 : 16.0;
+        final linkFontSize = isLarge ? 16.0 : 14.0;
+        final linkPadding = isLarge ? 8.0 : 8.0;
 
         return Column(
           children: [
-            SlideTransition(
-              position: _slideAnimation,
-              child: FadeTransition(
-                opacity: _fadeAnimation,
-                child: _currentForm == FormType.signup
+            (_currentForm == FormType.signup
                     ? SignUpForm(
                         onSubmit: _handleSignUp,
                         errorMessage: _errorMessage,
@@ -161,9 +124,11 @@ class _FormSwitcherState extends State<FormSwitcher>
                     : LoginForm(
                         onSubmit: _handleLogin,
                         errorMessage: _errorMessage,
-                      ),
-              ),
-            ),
+                      ))
+                .animate(key: ValueKey(_currentForm))
+                .fadeIn(duration: 300.ms, curve: Curves.easeOut)
+                .slideX(begin: 0.3, end: 0, duration: 400.ms, curve: Curves.easeOutCubic)
+                .scale(begin: const Offset(0.95, 0.95), end: const Offset(1, 1), duration: 350.ms),
             SizedBox(height: linkSpacing),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -177,13 +142,13 @@ class _FormSwitcherState extends State<FormSwitcher>
                     fontSize: linkFontSize,
                   ),
                 ),
-                SizedBox(width: linkButtonSpacing),
+                SizedBox(width: linkPadding),
                 TextButton(
                   onPressed: _switchForm,
                   style: TextButton.styleFrom(
                     padding: EdgeInsets.symmetric(
-                      horizontal: isDesktop ? 4.0 : 8.0,
-                      vertical: isDesktop ? 4.0 : 8.0,
+                      horizontal: linkPadding,
+                      vertical: linkPadding,
                     ),
                     minimumSize: Size.zero,
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,

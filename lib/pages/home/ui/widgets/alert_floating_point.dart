@@ -1,6 +1,7 @@
+import 'package:data_app/core/layout/responsive_utils.dart';
 import 'package:data_app/pages/home/ui/widgets/alert_hero_popup.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class AlertFloatingPoint extends StatelessWidget {
   const AlertFloatingPoint({super.key});
@@ -22,15 +23,11 @@ class AlertFloatingPoint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    double iconSize;
-    if (screenWidth > 1200) {
-      iconSize = 4.sp;
-    } else if (screenWidth > 600) {
-      iconSize = 8.sp;
-    } else {
-      iconSize = 12.sp;
-    }
+    final isLarge = isLargeScreen(context);
+    final size = isLarge ? 56.0 : 30.0;
+    final iconSize = isLarge ? 28.0 : 14.0;
+    final borderWidth = isLarge ? 2.5 : 2.0;
+    final padding = isLarge ? 3.0 : 2.0;
 
     return GestureDetector(
       onTap: () => _onTap(context),
@@ -39,15 +36,15 @@ class AlertFloatingPoint extends StatelessWidget {
         child: Material(
           color: Colors.transparent,
           child: Container(
-            padding: EdgeInsets.all(1.w),
-            width: 30.w,
-            height: 30.h,
+            padding: EdgeInsets.all(padding),
+            width: size,
+            height: size,
             decoration: BoxDecoration(
               color: Colors.transparent,
               shape: BoxShape.circle,
               border: Border.all(
                 color: Colors.white,
-                width: screenWidth > 1200 ? 0.8.w : 2.w,
+                width: borderWidth,
               ),
             ),
             child: Center(
@@ -57,7 +54,12 @@ class AlertFloatingPoint extends StatelessWidget {
                 size: iconSize,
               ),
             ),
-          ),
+          )
+              .animate(onPlay: (controller) => controller.repeat())
+              .scale(begin: const Offset(1, 1), end: const Offset(1.1, 1.1), duration: 1500.ms, curve: Curves.easeInOut)
+              .then()
+              .scale(begin: const Offset(1.1, 1.1), end: const Offset(1, 1), duration: 1500.ms, curve: Curves.easeInOut)
+              .shimmer(duration: 2000.ms, color: Colors.white.withOpacity(0.3)),
         ),
       ),
     );

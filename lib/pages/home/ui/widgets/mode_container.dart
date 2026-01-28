@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
+import 'package:data_app/core/layout/responsive_utils.dart';
 import 'package:data_app/core/widgets/test_data_mode_popup.dart';
 
 class ModeContainer extends StatefulWidget {
@@ -17,16 +18,14 @@ class _ModeContainerState extends State<ModeContainer> {
   Widget build(BuildContext context) {
     final bool isConnectModeActive = !_isTestDataMode;
     final bool isTestDataModeActive = _isTestDataMode;
-    final screenWidth = MediaQuery.of(context).size.width;
-    final double containerWidth = screenWidth > 1200 ? 24.w : 32.w;
-    final double containerHeight = 20.h;
-    final double thumbSize = 16.h;
-    final double thumbPadding = 2.w;
-    final double textSize = screenWidth > 1200
-        ? 4.sp
-        : screenWidth > 600
-        ? 6.sp
-        : 10.sp;
+    final w = MediaQuery.sizeOf(context).width;
+    final isLarge = isLargeWidth(w);
+    final double containerWidth = isLarge ? 56.0 : 32.0;
+    final double containerHeight = isLarge ? 32.0 : 20.0;
+    final double thumbSize = isLarge ? 26.0 : 16.0;
+    final double thumbPadding = isLarge ? 5.0 : 2.0;
+    final double textSize = isLarge ? 16.0 : 12.0;
+    final double gap = isLarge ? 14.0 : 8.0;
 
     return Center(
       child: Row(
@@ -44,8 +43,11 @@ class _ModeContainerState extends State<ModeContainer> {
                   ? Colors.white
                   : Colors.white.withOpacity(0.6),
             ),
-          ),
-          SizedBox(width: 8.w),
+          )
+              .animate(target: isConnectModeActive ? 1 : 0)
+              .fadeIn(duration: 200.ms)
+              .scale(begin: const Offset(0.95, 0.95), end: const Offset(1, 1), duration: 200.ms),
+          SizedBox(width: gap),
           GestureDetector(
             onTap: () {
               final willEnableTestData = !_isTestDataMode;
@@ -72,8 +74,8 @@ class _ModeContainerState extends State<ModeContainer> {
               child: Stack(
                 children: [
                   AnimatedPositioned(
-                    duration: const Duration(milliseconds: 200),
-                    curve: Curves.easeInOut,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeOutCubic,
                     left: isTestDataModeActive ? null : thumbPadding,
                     right: isTestDataModeActive ? thumbPadding : null,
                     top: (containerHeight - thumbSize) / 2,
@@ -93,13 +95,16 @@ class _ModeContainerState extends State<ModeContainer> {
                           ),
                         ],
                       ),
-                    ),
+                    )
+                        .animate(target: isTestDataModeActive ? 1 : 0)
+                        .scale(begin: const Offset(0.9, 0.9), end: const Offset(1, 1), duration: 300.ms, curve: Curves.elasticOut)
+                        .shimmer(duration: 1000.ms, color: Colors.white.withOpacity(0.3)),
                   ),
                 ],
               ),
             ),
           ),
-          SizedBox(width: 8.w),
+          SizedBox(width: gap),
           Text(
             "Work on test data",
             style: TextStyle(
@@ -111,9 +116,15 @@ class _ModeContainerState extends State<ModeContainer> {
                   ? Colors.white
                   : Colors.white.withOpacity(0.6),
             ),
-          ),
+          )
+              .animate(target: isTestDataModeActive ? 1 : 0)
+              .fadeIn(duration: 200.ms)
+              .scale(begin: const Offset(0.95, 0.95), end: const Offset(1, 1), duration: 200.ms),
         ],
-      ),
+      )
+          .animate()
+          .fadeIn(duration: 400.ms, delay: 400.ms, curve: Curves.easeOut)
+          .slideY(begin: 0.2, end: 0, duration: 500.ms, delay: 400.ms, curve: Curves.easeOutCubic),
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:data_app/core/layout/responsive_utils.dart';
 
 class WarningInfo extends StatelessWidget {
   const WarningInfo({super.key});
@@ -9,42 +10,25 @@ class WarningInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isDesktop = constraints.maxWidth > 1200;
-        final isTablet = constraints.maxWidth > 600;
+        final isLarge = isLargeWidth(constraints.maxWidth);
         return Padding(
           padding: EdgeInsets.only(
-            top: isDesktop
-                ? 16.h
-                : isTablet
-                ? 8.h
-                : 16.h,
-            bottom: isDesktop
-                ? 0
-                : isTablet
-                ? 8.h
-                : 16.h,
-            left: isDesktop ? 0 : 4.w,
-            right: isDesktop ? 0 : 4.w,
+            top: isLarge ? 12.0 : 16.0,
+            bottom: isLarge ? 12.0 : 16.0,
+            left: isLarge ? 8.0 : 4.0,
+            right: isLarge ? 8.0 : 4.0,
           ),
           child: Center(
             child: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: 220.w),
+              constraints: BoxConstraints(maxWidth: constraints.maxWidth * 0.8),
               child: Container(
                 padding: EdgeInsets.symmetric(
-                  horizontal: isDesktop
-                      ? 10.w
-                      : isTablet
-                      ? 8.w
-                      : 12.w,
-                  vertical: isDesktop
-                      ? 6.h
-                      : isTablet
-                      ? 8.h
-                      : 12.h,
+                  horizontal: isLarge ? 16.0 : 12.0,
+                  vertical: isLarge ? 14.0 : 12.0,
                 ),
                 decoration: BoxDecoration(
                   color: Colors.black,
-                  borderRadius: BorderRadius.circular(isDesktop ? 2.sp : 8.sp),
+                  borderRadius: BorderRadius.circular(8.0),
                   border: Border.all(color: Colors.grey, width: 1),
                 ),
                 child: Column(
@@ -57,45 +41,37 @@ class WarningInfo extends StatelessWidget {
                         Icon(
                           Iconsax.info_circle,
                           color: Colors.white,
-                          size: isDesktop
-                              ? 8.sp
-                              : isTablet
-                              ? 12.sp
-                              : 14.sp,
+                          size: isLarge ? 20.0 : 14.0,
                         ),
-                        SizedBox(width: isDesktop ? 2.w : 8.w),
+                        SizedBox(width: isLarge ? 10.0 : 8.0),
                         Text(
                           'Heads up!',
                           style: TextStyle(
-                            fontSize: isDesktop
-                                ? 4.sp
-                                : isTablet
-                                ? 6.sp
-                                : 8.sp,
+                            fontSize: isLarge ? 14.0 : 10.0,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(height: isDesktop ? 6.h : 8.h),
+                    SizedBox(height: isLarge ? 10.0 : 8.0),
                     Text(
                       'This project is still in development under SDAIA AI bootcamp. Please use with caution.',
                       textAlign: TextAlign.left,
                       style: TextStyle(
-                        fontSize: isDesktop
-                            ? 4.sp
-                            : isTablet
-                            ? 8.sp
-                            : 10.sp,
+                        fontSize: isLarge ? 13.0 : 10.0,
                         color: Colors.white,
-
                         height: 1.5,
                       ),
                     ),
                   ],
                 ),
-              ),
+              )
+                  .animate()
+                  .fadeIn(duration: 500.ms, curve: Curves.easeOut)
+                  .scale(begin: const Offset(0.9, 0.9), end: const Offset(1, 1), duration: 500.ms, curve: Curves.easeOutCubic)
+                  .slideY(begin: -0.2, end: 0, duration: 600.ms, curve: Curves.easeOut)
+                  .shimmer(duration: 2000.ms, color: Colors.white.withOpacity(0.1)),
             ),
           ),
         );

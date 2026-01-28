@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+
+import 'package:data_app/core/layout/responsive_utils.dart';
 
 class AnimatedSearchInput extends StatefulWidget {
   final FocusNode focusNode;
@@ -76,8 +78,9 @@ class _AnimatedSearchInputState extends State<AnimatedSearchInput> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isDesktop = constraints.maxWidth > 1200;
-        final isTablet = constraints.maxWidth > 600;
+        final isLarge = isLargeWidth(constraints.maxWidth);
+        final fontSize = isLarge ? 18.0 : 14.0;
+        final padding = isLarge ? 12.0 : 4.0;
 
         return Stack(
           children: [
@@ -85,24 +88,16 @@ class _AnimatedSearchInputState extends State<AnimatedSearchInput> {
               controller: _controller,
               focusNode: widget.focusNode,
               textAlign: TextAlign.left,
-              cursorHeight: isDesktop
-                  ? 1.4.sp
-                  : isTablet
-                  ? 6.sp
-                  : null,
+              cursorHeight: isLarge ? 20.0 : null,
               decoration: InputDecoration(
                 hintText: '',
                 contentPadding: EdgeInsets.symmetric(
-                  horizontal: 4.w,
-                  vertical: 4.h,
+                  horizontal: padding,
+                  vertical: padding,
                 ),
               ),
               style: TextStyle(
-                fontSize: isDesktop
-                    ? 1.4.sp
-                    : isTablet
-                    ? 6.sp
-                    : 8.sp,
+                fontSize: fontSize,
                 fontWeight: FontWeight.w500,
                 color: Colors.white,
               ),
@@ -112,60 +107,25 @@ class _AnimatedSearchInputState extends State<AnimatedSearchInput> {
                 child: IgnorePointer(
                   child: Padding(
                     padding: EdgeInsets.symmetric(
-                      horizontal: 4.w,
-                      vertical: 4.h,
+                      horizontal: padding,
+                      vertical: padding,
                     ),
                     child: Align(
                       alignment: Alignment.centerLeft,
-                      child: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 400),
-                        switchInCurve: Curves.easeOut,
-                        switchOutCurve: Curves.easeIn,
-                        layoutBuilder: (currentChild, previousChildren) {
-                          return Stack(
-                            alignment: Alignment.topLeft,
-                            clipBehavior: Clip.none,
-                            children: [
-                              ...previousChildren,
-                              if (currentChild != null) currentChild,
-                            ],
-                          );
-                        },
-                        transitionBuilder: (child, animation) {
-                          final slideAnimation =
-                              Tween<Offset>(
-                                begin: const Offset(0, 0.3),
-                                end: Offset.zero,
-                              ).animate(
-                                CurvedAnimation(
-                                  parent: animation,
-                                  curve: Curves.easeOut,
-                                ),
-                              );
-
-                          return SlideTransition(
-                            position: slideAnimation,
-                            child: FadeTransition(
-                              opacity: animation,
-                              child: child,
-                            ),
-                          );
-                        },
-                        child: Text(
-                          _hints[_currentHintIndex],
-                          key: ValueKey(_currentHintIndex),
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                            fontSize: isDesktop
-                                ? 1.4.sp
-                                : isTablet
-                                ? 6.sp
-                                : 12.sp,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white.withOpacity(0.5),
-                          ),
+                      child: Text(
+                        _hints[_currentHintIndex],
+                        key: ValueKey(_currentHintIndex),
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          fontSize: fontSize,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white.withOpacity(0.5),
                         ),
-                      ),
+                      )
+                          .animate(key: ValueKey(_currentHintIndex))
+                          .fadeIn(duration: 400.ms, curve: Curves.easeOut)
+                          .slideY(begin: 0.3, end: 0, duration: 500.ms, curve: Curves.easeOutCubic)
+                          .blur(begin: const Offset(0, 2), end: Offset.zero, duration: 400.ms),
                     ),
                   ),
                 ),

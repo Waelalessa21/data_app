@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SearchFieldContainer extends StatelessWidget {
   final bool isFocused;
@@ -13,6 +12,8 @@ class SearchFieldContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const radius = 12.0;
+
     return Container(
       decoration: BoxDecoration(
         border: Border.all(
@@ -21,7 +22,7 @@ class SearchFieldContainer extends StatelessWidget {
               : Colors.white.withOpacity(0.1),
           width: isFocused ? 2.0 : 1.0,
         ),
-        borderRadius: BorderRadius.circular(12.r),
+        borderRadius: BorderRadius.circular(radius),
         color: Colors.white.withOpacity(0.1),
       ),
       child: child,

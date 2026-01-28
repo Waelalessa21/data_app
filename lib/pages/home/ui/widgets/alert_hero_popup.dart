@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import 'package:data_app/core/layout/responsive_utils.dart';
 
 class AlertHeroPopup extends StatelessWidget {
   const AlertHeroPopup({super.key});
@@ -8,15 +9,13 @@ class AlertHeroPopup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    double imageSize;
-    if (screenWidth > 1200) {
-      imageSize = 100.w;
-    } else if (screenWidth > 600) {
-      imageSize = 200.w;
-    } else {
-      imageSize = 300.w;
-    }
+    final isLarge = isLargeScreen(context);
+    final imageSize = isLarge ? 180.0 : 200.0;
+    final padding = isLarge ? 28.0 : 16.0;
+    final titleSize = isLarge ? 24.0 : 16.0;
+    final bodySize = isLarge ? 18.0 : 12.0;
+    final gap = isLarge ? 16.0 : 16.0;
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: GestureDetector(
@@ -30,33 +29,31 @@ class AlertHeroPopup extends StatelessWidget {
               child: GestureDetector(
                 onTap: () {},
                 child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16.0.w,
-                    vertical: 16.0.h,
-                  ),
+                  padding: EdgeInsets.all(padding),
                   child: SingleChildScrollView(
                     child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Image.asset(
                           "assets/images/user.png",
                           width: imageSize,
                           height: imageSize,
                         ),
-                        SizedBox(height: 8.0.h),
+                        SizedBox(height: gap),
                         Text(
                           "This project is a work in progress. It is not ready for production.",
                           style: TextStyle(
-                            fontSize: screenWidth > 1200 ? 8.sp : 16.sp,
+                            fontSize: titleSize,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
                           textAlign: TextAlign.center,
                         ),
-                        SizedBox(height: 16.0.h),
+                        SizedBox(height: gap),
                         Text(
                           "In here we don't access your data. We only use it to generate a response and represent results in a chat-like interface.",
                           style: TextStyle(
-                            fontSize: screenWidth > 1200 ? 6.sp : 12.sp,
+                            fontSize: bodySize,
                             fontWeight: FontWeight.normal,
                             color: Colors.white,
                           ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+
+import 'package:data_app/core/layout/responsive_utils.dart';
 
 class LoginTitle extends StatelessWidget {
   final bool isLogin;
@@ -10,9 +12,10 @@ class LoginTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final screenWidth = MediaQuery.of(context).size.width;
-        final isDesktop = screenWidth > 1200;
-        final isTablet = screenWidth > 600 && screenWidth <= 1200;
+        final isLarge = isLargeWidth(constraints.maxWidth);
+        final titleSize = isLarge ? 36.0 : 28.0;
+        final subtitleSize = isLarge ? 18.0 : 16.0;
+        final gap = isLarge ? 12.0 : 8.0;
 
         return Column(
           mainAxisSize: MainAxisSize.min,
@@ -21,29 +24,28 @@ class LoginTitle extends StatelessWidget {
               isLogin ? 'Welcome back' : 'Create your account',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: isDesktop
-                    ? 24.0
-                    : isTablet
-                    ? 24.sp
-                    : 28.sp,
+                fontSize: titleSize,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
-            ),
-            SizedBox(height: isDesktop ? 6.0 : 8.h),
+            )
+                .animate(key: ValueKey('title-$isLogin'))
+                .fadeIn(duration: 400.ms, curve: Curves.easeOut)
+                .slideY(begin: -0.2, end: 0, duration: 500.ms, curve: Curves.easeOutCubic)
+                .scale(begin: const Offset(0.9, 0.9), end: const Offset(1, 1), duration: 400.ms),
+            SizedBox(height: gap),
             Text(
               isLogin ? 'Sign in to continue' : 'Sign up to get started',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: isDesktop
-                    ? 14.0
-                    : isTablet
-                    ? 14.sp
-                    : 16.sp,
+                fontSize: subtitleSize,
                 color: Colors.white70,
                 height: 1.5,
               ),
-            ),
+            )
+                .animate(key: ValueKey('subtitle-$isLogin'))
+                .fadeIn(duration: 400.ms, delay: 100.ms, curve: Curves.easeOut)
+                .slideY(begin: 0.2, end: 0, duration: 500.ms, delay: 100.ms, curve: Curves.easeOutCubic),
           ],
         );
       },

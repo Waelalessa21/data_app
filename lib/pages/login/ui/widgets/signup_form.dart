@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax/iconsax.dart';
+
+import 'package:data_app/core/layout/responsive_utils.dart';
 
 class SignUpForm extends StatefulWidget {
   final Function(String, String, String, String) onSubmit;
@@ -104,9 +105,9 @@ class _SignUpFormState extends State<SignUpForm> {
   Widget _buildStepIndicator() {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isDesktop = constraints.maxWidth > 1200;
-        final indicatorSize = isDesktop ? 6.0 : 8.0;
-        final spacing = isDesktop ? 6.0 : 8.0;
+        final isLarge = isLargeWidth(constraints.maxWidth);
+        final indicatorSize = isLarge ? 10.0 : 8.0;
+        final spacing = isLarge ? 12.0 : 8.0;
 
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -135,16 +136,16 @@ class _SignUpFormState extends State<SignUpForm> {
   Widget _buildCurrentStep() {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isDesktop = constraints.maxWidth > 1200;
-        final isTablet = constraints.maxWidth > 600;
+        final isLarge = isLargeWidth(constraints.maxWidth);
 
-        final iconSize = isDesktop ? 18.0 : isTablet ? 20.0 : 24.0;
-        final fontSize = isDesktop ? 14.0 : isTablet ? 15.0 : 16.0;
-        final labelFontSize = isDesktop ? 13.0 : isTablet ? 13.5 : 14.0;
-        final buttonPadding = isDesktop ? 11.0 : isTablet ? 14.0 : 16.0;
-        final buttonFontSize = isDesktop ? 14.0 : isTablet ? 15.0 : 16.0;
-        final errorFontSize = isDesktop ? 11.0 : isTablet ? 11.5 : 12.0;
-        final inputPadding = isDesktop ? 14.0 : isTablet ? 15.0 : 16.0;
+        final iconSize = isLarge ? 24.0 : 24.0;
+        final fontSize = isLarge ? 18.0 : 16.0;
+        final labelFontSize = isLarge ? 16.0 : 14.0;
+        final buttonPadding = isLarge ? 18.0 : 16.0;
+        final buttonFontSize = isLarge ? 18.0 : 16.0;
+        final errorFontSize = isLarge ? 14.0 : 12.0;
+        final inputPadding = isLarge ? 18.0 : 16.0;
+        final borderRadius = isLarge ? 12.0 : 10.0;
 
         Widget field;
 
@@ -158,8 +159,8 @@ class _SignUpFormState extends State<SignUpForm> {
                 labelStyle: TextStyle(color: Colors.white70, fontSize: labelFontSize),
                 prefixIcon: Icon(Iconsax.user, color: Colors.white70, size: iconSize),
                 contentPadding: EdgeInsets.symmetric(
-                  horizontal: isDesktop ? 14.0 : 16.0,
-                  vertical: isDesktop ? inputPadding : 16.0,
+                  horizontal: isLarge ? 18.0 : 16.0,
+                  vertical: inputPadding,
                 ),
               ),
               style: TextStyle(color: Colors.white, fontSize: fontSize),
@@ -176,8 +177,8 @@ class _SignUpFormState extends State<SignUpForm> {
                 labelStyle: TextStyle(color: Colors.white70, fontSize: labelFontSize),
                 prefixIcon: Icon(Iconsax.sms, color: Colors.white70, size: iconSize),
                 contentPadding: EdgeInsets.symmetric(
-                  horizontal: isDesktop ? 14.0 : 16.0,
-                  vertical: isDesktop ? inputPadding : 16.0,
+                  horizontal: isLarge ? 18.0 : 16.0,
+                  vertical: inputPadding,
                 ),
               ),
               style: TextStyle(color: Colors.white, fontSize: fontSize),
@@ -207,8 +208,8 @@ class _SignUpFormState extends State<SignUpForm> {
                   },
                 ),
                 contentPadding: EdgeInsets.symmetric(
-                  horizontal: isDesktop ? 14.0 : 16.0,
-                  vertical: isDesktop ? inputPadding : 16.0,
+                  horizontal: isLarge ? 18.0 : 16.0,
+                  vertical: inputPadding,
                 ),
               ),
               style: TextStyle(color: Colors.white, fontSize: fontSize),
@@ -238,8 +239,8 @@ class _SignUpFormState extends State<SignUpForm> {
                   },
                 ),
                 contentPadding: EdgeInsets.symmetric(
-                  horizontal: isDesktop ? 14.0 : 16.0,
-                  vertical: isDesktop ? inputPadding : 16.0,
+                  horizontal: isLarge ? 18.0 : 16.0,
+                  vertical: inputPadding,
                 ),
               ),
               style: TextStyle(color: Colors.white, fontSize: fontSize),
@@ -255,16 +256,16 @@ class _SignUpFormState extends State<SignUpForm> {
         return Column(
           children: [
             _buildStepIndicator(),
-            SizedBox(height: isDesktop ? 20.0 : 24.0),
+            SizedBox(height: isLarge ? 24.0 : 24.0),
             field,
             if (widget.errorMessage != null) ...[
-              SizedBox(height: isDesktop ? 12.0 : 16.0),
+              SizedBox(height: isLarge ? 12.0 : 16.0),
               Text(
                 widget.errorMessage!,
                 style: TextStyle(color: Colors.red, fontSize: errorFontSize),
               ),
             ],
-            SizedBox(height: isDesktop ? 20.0 : 24.0),
+            SizedBox(height: isLarge ? 24.0 : 24.0),
             Row(
               children: [
                 if (_currentStep > 0)
@@ -273,10 +274,10 @@ class _SignUpFormState extends State<SignUpForm> {
                       onPressed: _previousStep,
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.white,
-                        side: BorderSide(color: Colors.white54),
+                        side: const BorderSide(color: Colors.white54),
                         padding: EdgeInsets.symmetric(vertical: buttonPadding),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.r),
+                          borderRadius: BorderRadius.circular(borderRadius),
                         ),
                       ),
                       child: Text(
@@ -285,7 +286,7 @@ class _SignUpFormState extends State<SignUpForm> {
                       ),
                     ),
                   ),
-                if (_currentStep > 0) SizedBox(width: isDesktop ? 12.0 : 16.0),
+                if (_currentStep > 0) SizedBox(width: isLarge ? 12.0 : 16.0),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: _nextStep,
@@ -294,7 +295,7 @@ class _SignUpFormState extends State<SignUpForm> {
                       foregroundColor: Colors.black,
                       padding: EdgeInsets.symmetric(vertical: buttonPadding),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.r),
+                        borderRadius: BorderRadius.circular(borderRadius),
                       ),
                     ),
                     child: Text(

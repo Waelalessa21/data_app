@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:data_app/core/layout/responsive_utils.dart';
 import 'package:data_app/pages/home/ui/widgets/search_field_container.dart';
 import 'package:data_app/pages/home/ui/widgets/animated_search_input.dart';
 
@@ -34,21 +35,25 @@ class _SearchFieldState extends State<SearchField> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isDesktop = constraints.maxWidth > 1200;
-        final isTablet = constraints.maxWidth > 600;
+        final isLarge = isLargeWidth(constraints.maxWidth);
 
         return Padding(
           padding: EdgeInsets.symmetric(
-            horizontal: isDesktop
-                ? 58.w
-                : isTablet
-                ? 32.w
-                : 16.w,
-            vertical: 8.h,
+            horizontal: isLarge ? 20.0 : 16.0,
+            vertical: isLarge ? 14.0 : 8.0,
           ),
-          child: SearchFieldContainer(
-            isFocused: _isFocused,
-            child: AnimatedSearchInput(focusNode: _focusNode),
+          child: AnimatedScale(
+            scale: _isFocused ? 1.02 : 1.0,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+            child: SearchFieldContainer(
+              isFocused: _isFocused,
+              child: AnimatedSearchInput(focusNode: _focusNode),
+            )
+                .animate()
+                .fadeIn(duration: 400.ms, delay: 300.ms, curve: Curves.easeOut)
+                .slideY(begin: 0.2, end: 0, duration: 500.ms, delay: 300.ms, curve: Curves.easeOutCubic)
+                .shimmer(duration: 2000.ms, color: Colors.white.withOpacity(0.1), delay: 500.ms),
           ),
         );
       },

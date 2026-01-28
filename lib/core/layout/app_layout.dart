@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:data_app/core/layout/grid_background.dart';
+import 'package:data_app/core/layout/responsive_utils.dart';
 
 class AppLayout extends StatelessWidget {
   final Widget child;
@@ -11,9 +11,11 @@ class AppLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final screenWidth = MediaQuery.of(context).size.width;
-        final isDesktop = screenWidth > 1200;
-        final horizontalPadding = isDesktop ? 0.0 : 16.w;
+        final w = constraints.maxWidth;
+        final isLarge = isLargeWidth(w);
+        final maxWidth = isLarge ? kMaxContentWidth : double.infinity;
+        final horizontalPadding = isLarge ? 32.0 : 16.0;
+        final verticalPadding = isLarge ? 32.0 : 24.0;
 
         return Scaffold(
           body: Stack(
@@ -22,13 +24,11 @@ class AppLayout extends StatelessWidget {
               SafeArea(
                 child: Center(
                   child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxWidth: isDesktop ? 450.0 : double.infinity,
-                    ),
+                    constraints: BoxConstraints(maxWidth: maxWidth),
                     child: Padding(
                       padding: EdgeInsets.symmetric(
                         horizontal: horizontalPadding,
-                        vertical: 24.h,
+                        vertical: verticalPadding,
                       ),
                       child: child,
                     ),

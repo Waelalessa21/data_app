@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import 'package:data_app/core/layout/responsive_utils.dart';
 
 class GridBackground extends StatelessWidget {
   const GridBackground({super.key});
@@ -8,7 +9,8 @@ class GridBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final gridSize = 15.w;
+        final isLarge = isLargeWidth(constraints.maxWidth);
+        final gridSize = isLarge ? 24.0 : 15.0;
         return CustomPaint(
           painter: GridPainter(gridSize: gridSize),
           child: Container(),
