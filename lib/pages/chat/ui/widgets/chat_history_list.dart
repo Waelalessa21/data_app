@@ -24,47 +24,68 @@ class ChatHistoryList extends StatelessWidget {
       );
     }
 
-    return StreamBuilder<List<ChatConversationModel>>(
-      stream: ChatHistoryService.instance.getUserConversations(userId),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              color: Colors.white54,
-            ),
-          );
-        }
+    return Column(
+      children: [
+        Expanded(
+          child: StreamBuilder<List<ChatConversationModel>>(
+            stream: ChatHistoryService.instance.getUserConversations(userId),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white54,
+                  ),
+                );
+              }
 
-        if (snapshot.hasError) {
-          return ChatHistoryErrorState(error: snapshot.error.toString());
-        }
+              if (snapshot.hasError) {
+                return ChatHistoryErrorState(error: snapshot.error.toString());
+              }
 
-        final conversations = snapshot.data ?? [];
+              final conversations = snapshot.data ?? [];
 
-        if (conversations.isEmpty) {
-          return const ChatHistoryEmptyState();
-        }
+              if (conversations.isEmpty) {
+                return const ChatHistoryEmptyState();
+              }
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ChatHistoryHeader(conversationCount: conversations.length),
-            Divider(height: 1, color: Colors.white.withValues(alpha: 0.1)),
-            Expanded(
-              child: ListView.builder(
-                itemCount: conversations.length,
-                itemBuilder: (context, index) {
-                  return ChatHistoryItem(
-                    conversation: conversations[index],
-                    index: index,
-                  );
-                },
-              ),
-            ),
-          ],
-        );
-      },
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ChatHistoryHeader(conversationCount: conversations.length),
+                  Divider(height: 1, color: Colors.white.withValues(alpha: 0.1)),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: conversations.length,
+                      itemBuilder: (context, index) {
+                        return ChatHistoryItem(
+                          conversation: conversations[index],
+                          index: index,
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+        Divider(height: 1, color: Colors.white.withValues(alpha: 0.1)),
+        ListTile(
+          leading: Icon(Icons.logout, size: 20, color: Colors.white70),
+          title: Text(
+            'Log out',
+            style: TextStyle(color: Colors.white, fontSize: 14),
+          ),
+          onTap: () async {
+            await AuthService.instance.signOut();
+            if (context.mounted) {
+              final navigator = Navigator.of(context);
+              if (navigator.canPop()) navigator.pop();
+            }
+          },
+        ),
+      ],
     );
   }
 }

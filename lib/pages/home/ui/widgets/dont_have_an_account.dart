@@ -14,7 +14,7 @@ class DontHaveAnAccount extends StatelessWidget {
 
     if (isAuthenticated) {
       return InkWell(
-            onTap: () => AuthService.instance.signOut(),
+            onTap: () async => await AuthService.instance.signOut(),
             child: RichText(
               text: TextSpan(
                 children: [

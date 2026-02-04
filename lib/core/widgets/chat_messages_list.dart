@@ -15,6 +15,7 @@ class ChatMessagesList extends StatelessWidget {
   final Future<void> Function()? onReportTap;
   final Future<void> Function(String userPrompt, {String plotType})?
   onVisualizeTap;
+  final Future<void> Function(String userPrompt)? onGenerateReportTap;
 
   const ChatMessagesList({
     super.key,
@@ -26,6 +27,7 @@ class ChatMessagesList extends StatelessWidget {
     required this.emptyChild,
     this.onReportTap,
     this.onVisualizeTap,
+    this.onGenerateReportTap,
   });
 
   @override
@@ -53,6 +55,10 @@ class ChatMessagesList extends StatelessWidget {
           message: message,
           index: index,
           onReportTap: onReportTap,
+          onGenerateReportTap:
+              onGenerateReportTap != null && precedingUserPrompt != null
+              ? () => onGenerateReportTap!(precedingUserPrompt)
+              : null,
           onVisualizeTap: onVisualizeTap != null && precedingUserPrompt != null
               ? () => onVisualizeTap!(precedingUserPrompt, plotType: 'bar')
               : null,

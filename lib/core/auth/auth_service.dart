@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 enum AuthErrorType {
   emailInUse,
@@ -25,6 +26,12 @@ class AuthService {
   static final AuthService instance = AuthService._();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  Future<void> ensurePersistence() async {
+    if (kIsWeb) {
+      await _auth.setPersistence(Persistence.SESSION);
+    }
+  }
 
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 

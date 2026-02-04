@@ -19,18 +19,53 @@ class AuthGate extends StatelessWidget {
         final isAuthenticated = user != null;
 
         Widget screen;
+        String screenKey;
         if (isWaiting) {
           screen = const LoadingScreen();
+          screenKey = 'loading';
         } else if (isAuthenticated) {
           screen = const ChatScreen();
+          screenKey = 'chat';
         } else {
           screen = const HomeScreen();
+          screenKey = 'home';
         }
 
         return DataApp(
-          key: ValueKey(user?.uid ?? 'no_user'),
           appRouter: AppRouter(),
-          home: screen,
+          home: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 450),
+            switchInCurve: Curves.easeOutCubic,
+            switchOutCurve: Curves.easeInCubic,
+            transitionBuilder: (child, animation) {
+              return FadeTransition(
+                opacity: animation,
+                child: SlideTransition(
+                  position: Tween<Offset>(
+                    begin: const Offset(0, 0.04),
+                    end: Offset.zero,
+                  ).animate(CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeOutCubic,
+                  )),
+                  child: child,
+                ),
+              );
+            },
+            layoutBuilder: (currentChild, previousChildren) {
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  ...previousChildren,
+                  if (currentChild != null) currentChild,
+                ],
+              );
+            },
+            child: KeyedSubtree(
+              key: ValueKey(screenKey),
+              child: screen,
+            ),
+          ),
         );
       },
     );

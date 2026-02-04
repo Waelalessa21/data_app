@@ -102,9 +102,9 @@ class _UserMenuState extends State<UserMenu> {
                                   color: Colors.white.withValues(alpha: 0.1),
                                 ),
                                 InkWell(
-                                  onTap: () {
+                                  onTap: () async {
                                     _closeMenu();
-                                    AuthService.instance.signOut();
+                                    await AuthService.instance.signOut();
                                   },
                                   borderRadius: BorderRadius.only(
                                     bottomLeft: Radius.circular(12),

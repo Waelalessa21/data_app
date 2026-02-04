@@ -19,6 +19,7 @@ class ChatMainPanel extends StatelessWidget {
   final Future<void> Function()? onReportTap;
   final Future<void> Function(String userPrompt, {String plotType})?
   onVisualizeTap;
+  final Future<void> Function(String userPrompt)? onGenerateReportTap;
 
   const ChatMainPanel({
     super.key,
@@ -32,6 +33,7 @@ class ChatMainPanel extends StatelessWidget {
     required this.onSendPressed,
     this.onReportTap,
     this.onVisualizeTap,
+    this.onGenerateReportTap,
   });
 
   @override
@@ -73,6 +75,7 @@ class ChatMainPanel extends StatelessWidget {
                               emptyChild: const ChatEmptyState(),
                               onReportTap: onReportTap,
                               onVisualizeTap: onVisualizeTap,
+                              onGenerateReportTap: onGenerateReportTap,
                             ),
                           ),
                           const SizedBox(height: 12),

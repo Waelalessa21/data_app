@@ -20,6 +20,7 @@ class _FormSwitcherState extends State<FormSwitcher> {
   FormType _currentForm = FormType.signup;
   String? _errorMessage;
   bool _isLoading = false;
+  bool _isSuccess = false;
 
   @override
   void initState() {
@@ -59,7 +60,12 @@ class _FormSwitcherState extends State<FormSwitcher> {
       if (mounted) {
         setState(() {
           _isLoading = false;
+          _isSuccess = true;
         });
+        await Future.delayed(const Duration(milliseconds: 500));
+        if (mounted) {
+          Navigator.of(context).popUntil((route) => route.isFirst);
+        }
       }
     } on AuthException catch (e) {
       if (mounted) {
@@ -89,7 +95,12 @@ class _FormSwitcherState extends State<FormSwitcher> {
       if (mounted) {
         setState(() {
           _isLoading = false;
+          _isSuccess = true;
         });
+        await Future.delayed(const Duration(milliseconds: 500));
+        if (mounted) {
+          Navigator.of(context).popUntil((route) => route.isFirst);
+        }
       }
     } on AuthException catch (e) {
       if (mounted) {
@@ -119,46 +130,60 @@ class _FormSwitcherState extends State<FormSwitcher> {
 
         return Column(
           children: [
-            (_currentForm == FormType.signup
-                    ? SignUpForm(
-                        onSubmit: _handleSignUp,
-                        errorMessage: _errorMessage,
-                        isLoading: _isLoading,
-                      )
-                    : LoginForm(
-                        onSubmit: _handleLogin,
-                        errorMessage: _errorMessage,
-                        isLoading: _isLoading,
-                      ))
-                .animate(key: ValueKey(_currentForm))
-                .fadeIn(duration: 300.ms, curve: Curves.easeOut)
-                .slideX(
-                  begin: 0.3,
-                  end: 0,
-                  duration: 400.ms,
-                  curve: Curves.easeOutCubic,
-                )
-                .scale(
-                  begin: const Offset(0.95, 0.95),
-                  end: const Offset(1, 1),
-                  duration: 350.ms,
-                ),
+            AnimatedOpacity(
+              opacity: _isSuccess ? 0 : 1,
+              duration: const Duration(milliseconds: 400),
+              curve: Curves.easeOut,
+              child: AnimatedScale(
+                scale: _isSuccess ? 0.96 : 1,
+                duration: const Duration(milliseconds: 400),
+                curve: Curves.easeOut,
+                child: (_currentForm == FormType.signup
+                        ? SignUpForm(
+                            onSubmit: _handleSignUp,
+                            errorMessage: _errorMessage,
+                            isLoading: _isLoading,
+                          )
+                        : LoginForm(
+                            onSubmit: _handleLogin,
+                            errorMessage: _errorMessage,
+                            isLoading: _isLoading,
+                          ))
+                    .animate(key: ValueKey('$_currentForm-$_isSuccess'))
+                    .fadeIn(duration: 300.ms, curve: Curves.easeOut)
+                    .slideX(
+                      begin: 0.3,
+                      end: 0,
+                      duration: 400.ms,
+                      curve: Curves.easeOutCubic,
+                    )
+                    .scale(
+                      begin: const Offset(0.95, 0.95),
+                      end: const Offset(1, 1),
+                      duration: 350.ms,
+                    ),
+              ),
+            ),
             SizedBox(height: linkSpacing),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  _currentForm == FormType.signup
-                      ? 'Already have an account?'
-                      : "Don't have an account?",
-                  style: TextStyle(
-                    color: Colors.white70,
-                    fontSize: linkFontSize,
+            AnimatedOpacity(
+              opacity: _isSuccess ? 0 : 1,
+              duration: const Duration(milliseconds: 400),
+              curve: Curves.easeOut,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    _currentForm == FormType.signup
+                        ? 'Already have an account?'
+                        : "Don't have an account?",
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: linkFontSize,
+                    ),
                   ),
-                ),
-                SizedBox(width: linkPadding),
-                TextButton(
-                  onPressed: _switchForm,
+                  SizedBox(width: linkPadding),
+                  TextButton(
+                    onPressed: _switchForm,
                   style: TextButton.styleFrom(
                     padding: EdgeInsets.symmetric(
                       horizontal: linkPadding,
@@ -167,17 +192,18 @@ class _FormSwitcherState extends State<FormSwitcher> {
                     minimumSize: Size.zero,
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
-                  child: Text(
-                    _currentForm == FormType.signup ? 'Sign In' : 'Sign Up',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: linkFontSize,
-                      fontWeight: FontWeight.bold,
-                      decoration: TextDecoration.underline,
+                    child: Text(
+                      _currentForm == FormType.signup ? 'Sign In' : 'Sign Up',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: linkFontSize,
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         );

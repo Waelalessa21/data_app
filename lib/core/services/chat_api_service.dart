@@ -18,6 +18,7 @@ class ChatApiService {
     required List<Map<String, String>> conversationHistory,
     bool visualize = false,
     String plotType = 'bar',
+    bool generateReport = false,
   }) {
     final isTestMode = DataModeService.instance.isTestDataMode;
 
@@ -30,6 +31,10 @@ class ChatApiService {
     if (visualize) {
       payload['visualize'] = true;
       payload['plot_type'] = plotType;
+    }
+
+    if (generateReport) {
+      payload['generate_report'] = true;
     }
 
     return payload;
@@ -80,6 +85,24 @@ class ChatApiService {
           'Request failed. Please try again.';
       final message = ChatResponseFormatter.stripAnsiCodes(raw);
       throw ChatApiException(message);
+    }
+
+    final report = data['report'];
+    if (report is Map) {
+      final title = report['title']?.toString() ?? '';
+      final summary = report['summary']?.toString() ?? '';
+      final executedQuery = report['executed_query']?.toString() ?? '';
+      final rowCount = report['row_count']?.toString() ?? '';
+      final generatedAt = report['generated_at']?.toString() ?? '';
+
+      final parts = <String>[
+        if (title.isNotEmpty) title,
+        if (summary.isNotEmpty) summary,
+        if (executedQuery.isNotEmpty) 'Executed query:\n$executedQuery',
+        if (rowCount.isNotEmpty) 'Row count: $rowCount',
+        if (generatedAt.isNotEmpty) 'Generated at: $generatedAt',
+      ];
+      return parts.join('\n\n');
     }
 
     final sql = data['generated_sql'] as String? ?? '';

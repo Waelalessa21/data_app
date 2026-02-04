@@ -153,19 +153,14 @@ class _ChatScreenState extends State<ChatScreen> {
     String text, {
     bool autoSave = true,
     ChatQueryResult? queryResult,
+    bool clearProcessing = false,
   }) async {
-    final shouldShowFullAnimation = _isFirstMessage;
-    final duration = shouldShowFullAnimation ? 4500 : 1500;
-
-    setState(() => _isProcessing = true);
-    _scrollToBottom();
-
-    await Future.delayed(Duration(milliseconds: duration));
-
     if (!mounted) return;
     setState(() {
-      _isProcessing = false;
-      if (shouldShowFullAnimation) _isFirstMessage = false;
+      if (clearProcessing) {
+        _isProcessing = false;
+        if (_isFirstMessage) _isFirstMessage = false;
+      }
       _messages.add(
         ChatMessage(
           id: DateTime.now().microsecondsSinceEpoch.toString(),
@@ -268,6 +263,7 @@ class _ChatScreenState extends State<ChatScreen> {
     String userPrompt, {
     bool visualize = false,
     String plotType = 'bar',
+    bool generateReport = false,
   }) async {
     final payload = ChatApiService.instance.buildRequestPayload(
       userPrompt: userPrompt,
@@ -275,21 +271,36 @@ class _ChatScreenState extends State<ChatScreen> {
       conversationHistory: _buildContext(excludeLast: true),
       visualize: visualize,
       plotType: plotType,
+      generateReport: generateReport,
     );
     debugPrint('Chat API request: ${jsonEncode(payload)}');
+
+    setState(() => _isProcessing = true);
+    _scrollToBottom();
 
     try {
       final response = await ChatApiService.instance.sendRequest(payload);
       if (mounted) {
         if (response is ChatQueryResult) {
-          await _addSystemMessage('', autoSave: true, queryResult: response);
+          await _addSystemMessage(
+            '',
+            autoSave: true,
+            queryResult: response,
+            clearProcessing: true,
+          );
         } else {
-          await _addSystemMessage(response.toString(), autoSave: true);
+          await _addSystemMessage(
+            response.toString(),
+            autoSave: true,
+            clearProcessing: true,
+          );
         }
       }
     } on ChatApiException catch (e) {
       debugPrint('Chat API error: $e');
-      if (mounted) await _addSystemMessage('Error: $e', autoSave: true);
+      if (mounted) {
+        await _addSystemMessage('Error: $e', autoSave: true, clearProcessing: true);
+      }
     }
   }
 
@@ -307,15 +318,29 @@ class _ChatScreenState extends State<ChatScreen> {
     await _sendToApi(userPrompt, visualize: true, plotType: plotType);
   }
 
+  Future<void> _handleGenerateReport(String userPrompt) async {
+    await _sendToApi(userPrompt, generateReport: true);
+  }
+
   Future<void> _handleSubmit() async {
     final value = _controller.text.trim();
     if (value.isEmpty) return;
 
     final hasConnection = await _checkDatabaseConnection();
-    if (!hasConnection) return;
-
     _controller.clear();
     _addUserMessage(value, autoSave: false);
+    if (!hasConnection) {
+      if (mounted) {
+        final user = AuthService.instance.currentUser;
+        await _addSystemMessage(
+          user == null
+              ? 'Please sign in to chat with your data.'
+              : 'Please connect a database to continue.',
+          autoSave: true,
+        );
+      }
+      return;
+    }
     await _sendToApi(value);
   }
 
@@ -345,6 +370,7 @@ class _ChatScreenState extends State<ChatScreen> {
         onSendPressed: _handleSubmit,
         onReportTap: _exportReport,
         onVisualizeTap: _handleVisualize,
+        onGenerateReportTap: _handleGenerateReport,
       ),
       historyChild: const ChatHistoryList(),
       showDrawerButton: true,

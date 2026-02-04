@@ -8,6 +8,7 @@ class ChatBubble extends StatelessWidget {
   final ChatMessage message;
   final int index;
   final Future<void> Function()? onReportTap;
+  final Future<void> Function()? onGenerateReportTap;
   final Future<void> Function()? onVisualizeTap;
 
   const ChatBubble({
@@ -15,6 +16,7 @@ class ChatBubble extends StatelessWidget {
     required this.message,
     required this.index,
     this.onReportTap,
+    this.onGenerateReportTap,
     this.onVisualizeTap,
   });
 
@@ -76,7 +78,7 @@ class ChatBubble extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           content,
-                          if (!isUser) ...[
+                          if (!isUser && message.queryResult != null) ...[
                             const SizedBox(height: 10),
                             Row(
                               mainAxisSize: MainAxisSize.min,
@@ -86,8 +88,8 @@ class ChatBubble extends StatelessWidget {
                                   tooltip: 'Generate report',
                                   color: textColor,
                                   onTap: () async {
-                                    if (onReportTap != null) {
-                                      await onReportTap!();
+                                    if (onGenerateReportTap != null) {
+                                      await onGenerateReportTap!();
                                     }
                                   },
                                 ),
@@ -99,6 +101,17 @@ class ChatBubble extends StatelessWidget {
                                   onTap: () async {
                                     if (onVisualizeTap != null) {
                                       await onVisualizeTap!();
+                                    }
+                                  },
+                                ),
+                                const SizedBox(width: 8),
+                                _ActionIcon(
+                                  icon: Icons.picture_as_pdf_outlined,
+                                  tooltip: 'Export PDF',
+                                  color: textColor,
+                                  onTap: () async {
+                                    if (onReportTap != null) {
+                                      await onReportTap!();
                                     }
                                   },
                                 ),
