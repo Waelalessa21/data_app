@@ -1,0 +1,9 @@
+# Railway deployment configuration for data_app (Flutter web)
+# https://docs.railway.app/reference/config-as-code
+# Railway auto-detects the Dockerfile in the project root.
+
+[deploy]
+healthcheckPath = "/"
+healthcheckTimeout = 30
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3

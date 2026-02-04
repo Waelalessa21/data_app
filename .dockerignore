@@ -1,0 +1,29 @@
+# Git
+.git
+.gitignore
+
+# IDE and OS
+.idea
+.vscode
+*.iml
+.DS_Store
+
+# Flutter/Dart (rebuilt in container)
+.dart_tool
+.pub-cache
+.pub
+build
+
+# Android (not needed for web)
+android
+
+# iOS (not needed for web)
+ios
+
+# Test and coverage
+coverage
+**/*_test.dart
+
+# Docs and misc
+*.md
+.metadata
