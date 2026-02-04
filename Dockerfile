@@ -2,8 +2,6 @@ FROM ghcr.io/cirruslabs/flutter:stable AS builder
 
 WORKDIR /app
 
-RUN adduser --disabled-password --gecos "" flutteruser
-
 COPY pubspec.yaml pubspec.lock ./
 COPY analysis_options.yaml ./
 
@@ -11,12 +9,7 @@ RUN flutter pub get
 
 COPY . .
 
-RUN chown -R flutteruser:flutteruser /app
-
-RUN git config --system --add safe.directory /sdks/flutter
-
-USER flutteruser
-
+# Build as root; Flutter SDK in image is owned by root and needs write access to its cache
 RUN flutter build web --release --no-tree-shake-icons
 
 FROM node:20-alpine
