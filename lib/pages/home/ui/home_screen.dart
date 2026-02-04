@@ -1,3 +1,4 @@
+import 'package:data_app/core/auth/auth_service.dart';
 import 'package:data_app/core/layout/app_layout.dart';
 import 'package:data_app/core/layout/responsive_utils.dart';
 import 'package:data_app/pages/home/ui/widgets/alert_floating_point.dart';
@@ -5,9 +6,10 @@ import 'package:data_app/pages/home/ui/widgets/app_name_description.dart';
 import 'package:data_app/pages/home/ui/widgets/dont_have_an_account.dart';
 import 'package:data_app/pages/home/ui/widgets/mode_container.dart';
 import 'package:data_app/pages/home/ui/widgets/search_field.dart';
+import 'package:data_app/pages/home/ui/widgets/user_greeting.dart';
+import 'package:data_app/pages/home/ui/widgets/user_menu.dart';
 import 'package:data_app/pages/home/ui/widgets/warning_info.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -19,16 +21,25 @@ class HomeScreen extends StatelessWidget {
     final smallGap = isLarge ? 14.0 : 10.0;
     final floatLeft = isLarge ? 32.0 : 16.0;
     final floatBottom = isLarge ? 32.0 : 16.0;
+    final isSignedIn = AuthService.instance.currentUser != null;
 
     return AppLayout(
-      floatingWidget: Positioned(
-        left: floatLeft,
-        bottom: floatBottom,
-        child: AlertFloatingPoint(),
+      floatingWidget: Stack(
+        children: [
+          if (isSignedIn)
+            Positioned(left: floatLeft, top: floatLeft, child: UserMenu()),
+          Positioned(
+            left: floatLeft,
+            bottom: floatBottom,
+            child: AlertFloatingPoint(),
+          ),
+        ],
       ),
       child: SingleChildScrollView(
         child: Column(
           children: [
+            UserGreeting(),
+            if (isSignedIn) SizedBox(height: smallGap),
             WarningInfo(),
             SizedBox(height: gap),
             AppNameDescription(),
@@ -36,9 +47,11 @@ class HomeScreen extends StatelessWidget {
             SearchField(),
             SizedBox(height: smallGap),
             ModeContainer(),
-            SizedBox(height: gap),
-            DontHaveAnAccount(),
-            SizedBox(height: gap),
+            if (!isSignedIn) ...[
+              SizedBox(height: gap),
+              DontHaveAnAccount(),
+              SizedBox(height: gap),
+            ],
           ],
         ),
       ),

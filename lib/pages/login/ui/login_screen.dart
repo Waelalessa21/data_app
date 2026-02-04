@@ -2,9 +2,9 @@ import 'package:data_app/core/layout/app_layout.dart';
 import 'package:data_app/core/layout/responsive_utils.dart';
 import 'package:flutter/material.dart';
 
-import 'ui/widgets/login_container.dart';
-import 'ui/widgets/login_title.dart';
-import 'ui/widgets/form_switcher.dart';
+import 'widgets/login_container.dart';
+import 'widgets/login_title.dart';
+import 'widgets/form_switcher.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

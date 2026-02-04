@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Breakpoint above which we treat as "large" (web/desktop) and use fixed px
-/// for layout/sizing to keep text and containers readable.
 const double kBreakpointLarge = 600.0;
 
 const double kMaxContentWidth = 800.0;

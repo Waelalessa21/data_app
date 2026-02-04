@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:data_app/core/auth/auth_service.dart';
 import 'package:data_app/core/layout/responsive_utils.dart';
 import 'package:data_app/pages/login/ui/widgets/signup_form.dart';
 import 'package:data_app/pages/login/ui/widgets/login_form.dart';
-import 'package:data_app/core/database/database_service.dart';
-import 'package:data_app/core/models/user_model.dart';
 
 enum FormType { signup, login }
 
@@ -20,6 +19,7 @@ class FormSwitcher extends StatefulWidget {
 class _FormSwitcherState extends State<FormSwitcher> {
   FormType _currentForm = FormType.signup;
   String? _errorMessage;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -39,7 +39,7 @@ class _FormSwitcherState extends State<FormSwitcher> {
     widget.onFormTypeChanged?.call(_currentForm == FormType.login);
   }
 
-  void _handleSignUp(
+  Future<void> _handleSignUp(
     String username,
     String email,
     String password,
@@ -47,61 +47,64 @@ class _FormSwitcherState extends State<FormSwitcher> {
   ) async {
     setState(() {
       _errorMessage = null;
+      _isLoading = true;
     });
 
     try {
-      final dbService = DatabaseService.instance;
-      final existingUser = await dbService.getUserByEmail(email);
-      final existingUsername = await dbService.getUserByUsername(username);
-
-      if (existingUser != null) {
-        setState(() {
-          _errorMessage = 'Email already exists';
-        });
-        return;
-      }
-
-      if (existingUsername != null) {
-        setState(() {
-          _errorMessage = 'Username already exists';
-        });
-        return;
-      }
-
-      final user = UserModel(
-        username: username,
+      await AuthService.instance.signUp(
         email: email,
         password: password,
+        displayName: username,
       );
-
-      await dbService.createUser(user);
-      _switchForm();
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } on AuthException catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = e.message;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _errorMessage = 'Error creating account. Please try again.';
-      });
+      if (mounted) {
+        setState(() {
+          _errorMessage = 'Error creating account. Please try again.';
+          _isLoading = false;
+        });
+      }
     }
   }
 
-  void _handleLogin(String email, String password) async {
+  Future<void> _handleLogin(String email, String password) async {
     setState(() {
       _errorMessage = null;
+      _isLoading = true;
     });
 
     try {
-      final dbService = DatabaseService.instance;
-      final user = await dbService.getUserByEmail(email);
-
-      if (user == null || user.password != password) {
+      await AuthService.instance.signIn(email: email, password: password);
+      if (mounted) {
         setState(() {
-          _errorMessage = 'Invalid email or password';
+          _isLoading = false;
         });
-        return;
+      }
+    } on AuthException catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = e.message;
+          _isLoading = false;
+        });
       }
     } catch (e) {
-      setState(() {
-        _errorMessage = 'Error logging in. Please try again.';
-      });
+      if (mounted) {
+        setState(() {
+          _errorMessage = 'Error logging in. Please try again.';
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -120,15 +123,26 @@ class _FormSwitcherState extends State<FormSwitcher> {
                     ? SignUpForm(
                         onSubmit: _handleSignUp,
                         errorMessage: _errorMessage,
+                        isLoading: _isLoading,
                       )
                     : LoginForm(
                         onSubmit: _handleLogin,
                         errorMessage: _errorMessage,
+                        isLoading: _isLoading,
                       ))
                 .animate(key: ValueKey(_currentForm))
                 .fadeIn(duration: 300.ms, curve: Curves.easeOut)
-                .slideX(begin: 0.3, end: 0, duration: 400.ms, curve: Curves.easeOutCubic)
-                .scale(begin: const Offset(0.95, 0.95), end: const Offset(1, 1), duration: 350.ms),
+                .slideX(
+                  begin: 0.3,
+                  end: 0,
+                  duration: 400.ms,
+                  curve: Curves.easeOutCubic,
+                )
+                .scale(
+                  begin: const Offset(0.95, 0.95),
+                  end: const Offset(1, 1),
+                  duration: 350.ms,
+                ),
             SizedBox(height: linkSpacing),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

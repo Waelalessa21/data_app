@@ -1,7 +1,10 @@
-import 'package:data_app/core/routing/app_router.dart';
-import 'package:data_app/data_app.dart';
+import 'package:data_app/core/auth/auth_gate.dart';
+import 'package:data_app/core/auth/firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(DataApp(appRouter: AppRouter()));
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  runApp(const AuthGate());
 }

@@ -6,11 +6,13 @@ import 'package:data_app/core/layout/responsive_utils.dart';
 class LoginForm extends StatefulWidget {
   final Function(String, String) onSubmit;
   final String? errorMessage;
+  final bool isLoading;
 
   const LoginForm({
     super.key,
     required this.onSubmit,
     this.errorMessage,
+    this.isLoading = false,
   });
 
   @override
@@ -32,10 +34,7 @@ class _LoginFormState extends State<LoginForm> {
 
   void _handleSubmit() {
     if (_formKey.currentState!.validate()) {
-      widget.onSubmit(
-        _emailController.text.trim(),
-        _passwordController.text,
-      );
+      widget.onSubmit(_emailController.text.trim(), _passwordController.text);
     }
   }
 
@@ -62,8 +61,15 @@ class _LoginFormState extends State<LoginForm> {
                 controller: _emailController,
                 decoration: InputDecoration(
                   labelText: 'Email',
-                  labelStyle: TextStyle(color: Colors.white70, fontSize: labelFontSize),
-                  prefixIcon: Icon(Iconsax.sms, color: Colors.white70, size: iconSize),
+                  labelStyle: TextStyle(
+                    color: Colors.white70,
+                    fontSize: labelFontSize,
+                  ),
+                  prefixIcon: Icon(
+                    Iconsax.sms,
+                    color: Colors.white70,
+                    size: iconSize,
+                  ),
                   contentPadding: EdgeInsets.symmetric(
                     horizontal: isLarge ? 18.0 : 16.0,
                     vertical: inputPadding,
@@ -86,8 +92,15 @@ class _LoginFormState extends State<LoginForm> {
                 controller: _passwordController,
                 decoration: InputDecoration(
                   labelText: 'Password',
-                  labelStyle: TextStyle(color: Colors.white70, fontSize: labelFontSize),
-                  prefixIcon: Icon(Iconsax.lock, color: Colors.white70, size: iconSize),
+                  labelStyle: TextStyle(
+                    color: Colors.white70,
+                    fontSize: labelFontSize,
+                  ),
+                  prefixIcon: Icon(
+                    Iconsax.lock,
+                    color: Colors.white70,
+                    size: iconSize,
+                  ),
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscurePassword ? Iconsax.eye : Iconsax.eye_slash,
@@ -125,7 +138,7 @@ class _LoginFormState extends State<LoginForm> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _handleSubmit,
+                  onPressed: widget.isLoading ? null : _handleSubmit,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
                     foregroundColor: Colors.black,
@@ -134,10 +147,22 @@ class _LoginFormState extends State<LoginForm> {
                       borderRadius: BorderRadius.circular(borderRadius),
                     ),
                   ),
-                  child: Text(
-                    'Sign In',
-                    style: TextStyle(fontSize: buttonFontSize, fontWeight: FontWeight.bold),
-                  ),
+                  child: widget.isLoading
+                      ? SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.black,
+                          ),
+                        )
+                      : Text(
+                          'Sign In',
+                          style: TextStyle(
+                            fontSize: buttonFontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                 ),
               ),
             ],

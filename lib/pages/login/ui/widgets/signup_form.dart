@@ -6,11 +6,13 @@ import 'package:data_app/core/layout/responsive_utils.dart';
 class SignUpForm extends StatefulWidget {
   final Function(String, String, String, String) onSubmit;
   final String? errorMessage;
+  final bool isLoading;
 
   const SignUpForm({
     super.key,
     required this.onSubmit,
     this.errorMessage,
+    this.isLoading = false,
   });
 
   @override
@@ -23,7 +25,7 @@ class _SignUpFormState extends State<SignUpForm> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  
+
   int _currentStep = 0;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
@@ -156,8 +158,15 @@ class _SignUpFormState extends State<SignUpForm> {
               autofocus: true,
               decoration: InputDecoration(
                 labelText: 'Username',
-                labelStyle: TextStyle(color: Colors.white70, fontSize: labelFontSize),
-                prefixIcon: Icon(Iconsax.user, color: Colors.white70, size: iconSize),
+                labelStyle: TextStyle(
+                  color: Colors.white70,
+                  fontSize: labelFontSize,
+                ),
+                prefixIcon: Icon(
+                  Iconsax.user,
+                  color: Colors.white70,
+                  size: iconSize,
+                ),
                 contentPadding: EdgeInsets.symmetric(
                   horizontal: isLarge ? 18.0 : 16.0,
                   vertical: inputPadding,
@@ -174,8 +183,15 @@ class _SignUpFormState extends State<SignUpForm> {
               autofocus: true,
               decoration: InputDecoration(
                 labelText: 'Email',
-                labelStyle: TextStyle(color: Colors.white70, fontSize: labelFontSize),
-                prefixIcon: Icon(Iconsax.sms, color: Colors.white70, size: iconSize),
+                labelStyle: TextStyle(
+                  color: Colors.white70,
+                  fontSize: labelFontSize,
+                ),
+                prefixIcon: Icon(
+                  Iconsax.sms,
+                  color: Colors.white70,
+                  size: iconSize,
+                ),
                 contentPadding: EdgeInsets.symmetric(
                   horizontal: isLarge ? 18.0 : 16.0,
                   vertical: inputPadding,
@@ -193,8 +209,15 @@ class _SignUpFormState extends State<SignUpForm> {
               autofocus: true,
               decoration: InputDecoration(
                 labelText: 'Password',
-                labelStyle: TextStyle(color: Colors.white70, fontSize: labelFontSize),
-                prefixIcon: Icon(Iconsax.lock, color: Colors.white70, size: iconSize),
+                labelStyle: TextStyle(
+                  color: Colors.white70,
+                  fontSize: labelFontSize,
+                ),
+                prefixIcon: Icon(
+                  Iconsax.lock,
+                  color: Colors.white70,
+                  size: iconSize,
+                ),
                 suffixIcon: IconButton(
                   icon: Icon(
                     _obscurePassword ? Iconsax.eye : Iconsax.eye_slash,
@@ -224,8 +247,15 @@ class _SignUpFormState extends State<SignUpForm> {
               autofocus: true,
               decoration: InputDecoration(
                 labelText: 'Confirm Password',
-                labelStyle: TextStyle(color: Colors.white70, fontSize: labelFontSize),
-                prefixIcon: Icon(Iconsax.lock_1, color: Colors.white70, size: iconSize),
+                labelStyle: TextStyle(
+                  color: Colors.white70,
+                  fontSize: labelFontSize,
+                ),
+                prefixIcon: Icon(
+                  Iconsax.lock_1,
+                  color: Colors.white70,
+                  size: iconSize,
+                ),
                 suffixIcon: IconButton(
                   icon: Icon(
                     _obscureConfirmPassword ? Iconsax.eye : Iconsax.eye_slash,
@@ -289,7 +319,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 if (_currentStep > 0) SizedBox(width: isLarge ? 12.0 : 16.0),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: _nextStep,
+                    onPressed: widget.isLoading ? null : _nextStep,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       foregroundColor: Colors.black,
@@ -298,10 +328,22 @@ class _SignUpFormState extends State<SignUpForm> {
                         borderRadius: BorderRadius.circular(borderRadius),
                       ),
                     ),
-                    child: Text(
-                      _currentStep == 3 ? 'Sign Up' : 'Next',
-                      style: TextStyle(fontSize: buttonFontSize, fontWeight: FontWeight.bold),
-                    ),
+                    child: widget.isLoading
+                        ? SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.black,
+                            ),
+                          )
+                        : Text(
+                            _currentStep == 3 ? 'Sign Up' : 'Next',
+                            style: TextStyle(
+                              fontSize: buttonFontSize,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                   ),
                 ),
               ],
@@ -314,9 +356,6 @@ class _SignUpFormState extends State<SignUpForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: _buildCurrentStep(),
-    );
+    return Form(key: _formKey, child: _buildCurrentStep());
   }
 }

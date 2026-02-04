@@ -6,8 +6,13 @@ import 'package:data_app/core/layout/responsive_utils.dart';
 
 class AnimatedSearchInput extends StatefulWidget {
   final FocusNode focusNode;
+  final ValueChanged<String>? onSubmitted;
 
-  const AnimatedSearchInput({super.key, required this.focusNode});
+  const AnimatedSearchInput({
+    super.key,
+    required this.focusNode,
+    this.onSubmitted,
+  });
 
   @override
   State<AnimatedSearchInput> createState() => _AnimatedSearchInputState();
@@ -89,6 +94,11 @@ class _AnimatedSearchInputState extends State<AnimatedSearchInput> {
               focusNode: widget.focusNode,
               textAlign: TextAlign.left,
               cursorHeight: isLarge ? 20.0 : null,
+              onSubmitted: (value) {
+                final prompt = value.trim();
+                if (prompt.isEmpty) return;
+                widget.onSubmitted?.call(prompt);
+              },
               decoration: InputDecoration(
                 hintText: '',
                 contentPadding: EdgeInsets.symmetric(
@@ -112,20 +122,30 @@ class _AnimatedSearchInputState extends State<AnimatedSearchInput> {
                     ),
                     child: Align(
                       alignment: Alignment.centerLeft,
-                      child: Text(
-                        _hints[_currentHintIndex],
-                        key: ValueKey(_currentHintIndex),
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          fontSize: fontSize,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white.withOpacity(0.5),
-                        ),
-                      )
-                          .animate(key: ValueKey(_currentHintIndex))
-                          .fadeIn(duration: 400.ms, curve: Curves.easeOut)
-                          .slideY(begin: 0.3, end: 0, duration: 500.ms, curve: Curves.easeOutCubic)
-                          .blur(begin: const Offset(0, 2), end: Offset.zero, duration: 400.ms),
+                      child:
+                          Text(
+                                _hints[_currentHintIndex],
+                                key: ValueKey(_currentHintIndex),
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                  fontSize: fontSize,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white.withOpacity(0.5),
+                                ),
+                              )
+                              .animate(key: ValueKey(_currentHintIndex))
+                              .fadeIn(duration: 400.ms, curve: Curves.easeOut)
+                              .slideY(
+                                begin: 0.3,
+                                end: 0,
+                                duration: 500.ms,
+                                curve: Curves.easeOutCubic,
+                              )
+                              .blur(
+                                begin: const Offset(0, 2),
+                                end: Offset.zero,
+                                duration: 400.ms,
+                              ),
                     ),
                   ),
                 ),
