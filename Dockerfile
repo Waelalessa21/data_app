@@ -12,6 +12,9 @@ RUN flutter pub get
 COPY . .
 
 RUN chown -R flutteruser:flutteruser /app
+
+RUN git config --system --add safe.directory /sdks/flutter
+
 USER flutteruser
 
 RUN flutter build web --release --no-tree-shake-icons
